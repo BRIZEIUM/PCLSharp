@@ -226,6 +226,666 @@ Point3Fs* projectPlane(Point3F points[], const int length, const float a, const 
 }
 
 /// <summary>
+/// 投射线
+/// </summary>
+/// <param name="points">点集</param>
+/// <param name="length">点集长度</param>
+/// <param name="a">线方程系数a</param>
+/// <param name="b">线方程系数b</param>
+/// <param name="c">线方程系数c</param>
+/// <param name="d">线方程系数d</param>
+/// <param name="e">线方程系数e</param>
+/// <param name="f">线方程系数f</param>
+/// <returns>投射后点云</returns>
+/// <remarks>线方程: (x, y, z) = (a, b, c) + t(d, e, f)</remarks>
+Point3Fs* projectLine(Point3F points[], const int length, const float a, const float b, const float c, const float d, const float e, const float f) {
+	const PointCloud<PointXYZ>::Ptr& sourceCloud = pclsharp::toPointCloud(points, length);
+	const PointCloud<PointXYZ>::Ptr targetCloud = std::make_shared<PointCloud<PointXYZ>>();
+
+	// 定义直线
+	const ModelCoefficients::Ptr coefficients = std::make_shared<ModelCoefficients>();
+	coefficients->values.resize(6);
+	coefficients->values[0] = a;
+	coefficients->values[1] = b;
+	coefficients->values[2] = c;
+	coefficients->values[3] = d;
+	coefficients->values[4] = e;
+	coefficients->values[5] = f;
+
+	// 投射直线
+	ProjectInliers<PointXYZ> projectInliers;
+	projectInliers.setInputCloud(sourceCloud);
+	projectInliers.setModelType(pcl::SACMODEL_LINE);
+	projectInliers.setModelCoefficients(coefficients);
+	projectInliers.filter(*targetCloud);
+
+	Point3Fs* point3Fs = pclsharp::toPoint3Fs(*targetCloud);
+
+	return point3Fs;
+}
+
+/// <summary>
+/// 投射2D圆
+/// </summary>
+/// <param name="points">点集</param>
+/// <param name="length">点集长度</param>
+/// <param name="x">圆心x坐标</param>
+/// <param name="y">圆心y坐标</param>
+/// <param name="radius">半径</param>
+/// <returns>投射后点云</returns>
+Point3Fs* projectCircle2D(Point3F points[], const int length, const float x, const float y, const float radius) {
+	const PointCloud<PointXYZ>::Ptr& sourceCloud = pclsharp::toPointCloud(points, length);
+	const PointCloud<PointXYZ>::Ptr targetCloud = std::make_shared<PointCloud<PointXYZ>>();
+
+	// 定义2D圆
+	const ModelCoefficients::Ptr coefficients = std::make_shared<ModelCoefficients>();
+	coefficients->values.resize(3);
+	coefficients->values[0] = x;
+	coefficients->values[1] = y;
+	coefficients->values[2] = radius;
+
+	// 投射2D圆
+	ProjectInliers<PointXYZ> projectInliers;
+	projectInliers.setInputCloud(sourceCloud);
+	projectInliers.setModelType(pcl::SACMODEL_CIRCLE2D);
+	projectInliers.setModelCoefficients(coefficients);
+	projectInliers.filter(*targetCloud);
+
+	Point3Fs* point3Fs = pclsharp::toPoint3Fs(*targetCloud);
+
+	return point3Fs;
+}
+
+/// <summary>
+/// 投射3D圆
+/// </summary>
+/// <param name="points">点集</param>
+/// <param name="length">点集长度</param>
+/// <param name="x">圆心x坐标</param>
+/// <param name="y">圆心y坐标</param>
+/// <param name="z">圆心z坐标</param>
+/// <param name="radius">半径</param>
+/// <returns>投射后点云</returns>
+Point3Fs* projectCircle3D(Point3F points[], const int length, const float x, const float y, const float z, const float radius) {
+	const PointCloud<PointXYZ>::Ptr& sourceCloud = pclsharp::toPointCloud(points, length);
+	const PointCloud<PointXYZ>::Ptr targetCloud = std::make_shared<PointCloud<PointXYZ>>();
+
+	// 定义3D圆
+	const ModelCoefficients::Ptr coefficients = std::make_shared<ModelCoefficients>();
+	coefficients->values.resize(4);
+	coefficients->values[0] = x;
+	coefficients->values[1] = y;
+	coefficients->values[2] = z;
+	coefficients->values[3] = radius;
+
+	// 投射3D圆
+	ProjectInliers<PointXYZ> projectInliers;
+	projectInliers.setInputCloud(sourceCloud);
+	projectInliers.setModelType(pcl::SACMODEL_CIRCLE3D);
+	projectInliers.setModelCoefficients(coefficients);
+	projectInliers.filter(*targetCloud);
+
+	Point3Fs* point3Fs = pclsharp::toPoint3Fs(*targetCloud);
+
+	return point3Fs;
+}
+
+/// <summary>
+/// 投射球
+/// </summary>
+/// <param name="points">点集</param>
+/// <param name="length">点集长度</param>
+/// <param name="x">球心x坐标</param>
+/// <param name="y">球心y坐标</param>
+/// <param name="z">球心z坐标</param>
+/// <param name="radius">半径</param>
+/// <returns>投射后点云</returns>
+Point3Fs* projectSphere(Point3F points[], const int length, const float x, const float y, const float z, const float radius) {
+	const PointCloud<PointXYZ>::Ptr& sourceCloud = pclsharp::toPointCloud(points, length);
+	const PointCloud<PointXYZ>::Ptr targetCloud = std::make_shared<PointCloud<PointXYZ>>();
+
+	// 定义球
+	const ModelCoefficients::Ptr coefficients = std::make_shared<ModelCoefficients>();
+	coefficients->values.resize(4);
+	coefficients->values[0] = x;
+	coefficients->values[1] = y;
+	coefficients->values[2] = z;
+	coefficients->values[3] = radius;
+
+	// 投射球
+	ProjectInliers<PointXYZ> projectInliers;
+	projectInliers.setInputCloud(sourceCloud);
+	projectInliers.setModelType(pcl::SACMODEL_SPHERE);
+	projectInliers.setModelCoefficients(coefficients);
+	projectInliers.filter(*targetCloud);
+
+	Point3Fs* point3Fs = pclsharp::toPoint3Fs(*targetCloud);
+
+	return point3Fs;
+}
+
+/// <summary>
+/// 投射圆柱
+/// </summary>
+/// <param name="points">点集</param>
+/// <param name="length">点集长度</param>
+/// <param name="x">圆柱中心线起点x坐标</param>
+/// <param name="y">圆柱中心线起点y坐标</param>
+/// <param name="z">圆柱中心线起点z坐标</param>
+/// <param name="dx">圆柱中心线方向x分量</param>
+/// <param name="dy">圆柱中心线方向y分量</param>
+/// <param name="dz">圆柱中心线方向z分量</param>
+/// <param name="radius">半径</param>
+/// <returns>投射后点云</returns>
+Point3Fs* projectCylinder(Point3F points[], const int length, const float x, const float y, const float z, const float dx, const float dy, const float dz, const float radius) {
+	const PointCloud<PointXYZ>::Ptr& sourceCloud = pclsharp::toPointCloud(points, length);
+	const PointCloud<PointXYZ>::Ptr targetCloud = std::make_shared<PointCloud<PointXYZ>>();
+
+	// 定义圆柱
+	const ModelCoefficients::Ptr coefficients = std::make_shared<ModelCoefficients>();
+	coefficients->values.resize(7);
+	coefficients->values[0] = x;
+	coefficients->values[1] = y;
+	coefficients->values[2] = z;
+	coefficients->values[3] = dx;
+	coefficients->values[4] = dy;
+	coefficients->values[5] = dz;
+	coefficients->values[6] = radius;
+
+	// 投射圆柱
+	ProjectInliers<PointXYZ> projectInliers;
+	projectInliers.setInputCloud(sourceCloud);
+	projectInliers.setModelType(pcl::SACMODEL_CYLINDER);
+	projectInliers.setModelCoefficients(coefficients);
+	projectInliers.filter(*targetCloud);
+
+	Point3Fs* point3Fs = pclsharp::toPoint3Fs(*targetCloud);
+
+	return point3Fs;
+}
+
+/// <summary>
+/// 投射圆锥
+/// </summary>
+/// <param name="points">点集</param>
+/// <param name="length">点集长度</param>
+/// <param name="x">圆锥顶点x坐标</param>
+/// <param name="y">圆锥顶点y坐标</param>
+/// <param name="z">圆锥顶点z坐标</param>
+/// <param name="dx">圆锥方向x分量</param>
+/// <param name="dy">圆锥方向y分量</param>
+/// <param name="dz">圆锥方向z分量</param>
+/// <param name="angle">圆锥角度</param>
+/// <returns>投射后点云</returns>
+Point3Fs* projectCone(Point3F points[], const int length, const float x, const float y, const float z, const float dx, const float dy, const float dz, const float angle) {
+	const PointCloud<PointXYZ>::Ptr& sourceCloud = pclsharp::toPointCloud(points, length);
+	const PointCloud<PointXYZ>::Ptr targetCloud = std::make_shared<PointCloud<PointXYZ>>();
+
+	// 定义圆锥
+	const ModelCoefficients::Ptr coefficients = std::make_shared<ModelCoefficients>();
+	coefficients->values.resize(7);
+	coefficients->values[0] = x;
+	coefficients->values[1] = y;
+	coefficients->values[2] = z;
+	coefficients->values[3] = dx;
+	coefficients->values[4] = dy;
+	coefficients->values[5] = dz;
+	coefficients->values[6] = angle;
+
+	// 投射圆锥
+	ProjectInliers<PointXYZ> projectInliers;
+	projectInliers.setInputCloud(sourceCloud);
+	projectInliers.setModelType(pcl::SACMODEL_CONE);
+	projectInliers.setModelCoefficients(coefficients);
+	projectInliers.filter(*targetCloud);
+
+	Point3Fs* point3Fs = pclsharp::toPoint3Fs(*targetCloud);
+
+	return point3Fs;
+}
+
+/// <summary>
+/// 投射圆环
+/// </summary>
+/// <param name="points">点集</param>
+/// <param name="length">点集长度</param>
+/// <param name="x">圆环中心x坐标</param>
+/// <param name="y">圆环中心y坐标</param>
+/// <param name="z">圆环中心z坐标</param>
+/// <param name="dx">圆环法向量x分量</param>
+/// <param name="dy">圆环法向量y分量</param>
+/// <param name="dz">圆环法向量z分量</param>
+/// <param name="radius">圆环半径</param>
+/// <param name="tube_radius">圆环管半径</param>
+/// <returns>投射后点云</returns>
+Point3Fs* projectTorus(Point3F points[], const int length, const float x, const float y, const float z, const float dx, const float dy, const float dz, const float radius, const float tube_radius) {
+	const PointCloud<PointXYZ>::Ptr& sourceCloud = pclsharp::toPointCloud(points, length);
+	const PointCloud<PointXYZ>::Ptr targetCloud = std::make_shared<PointCloud<PointXYZ>>();
+
+	// 定义圆环
+	const ModelCoefficients::Ptr coefficients = std::make_shared<ModelCoefficients>();
+	coefficients->values.resize(7);
+	coefficients->values[0] = x;
+	coefficients->values[1] = y;
+	coefficients->values[2] = z;
+	coefficients->values[3] = dx;
+	coefficients->values[4] = dy;
+	coefficients->values[5] = dz;
+	coefficients->values[6] = radius;
+	coefficients->values[7] = tube_radius;
+
+	// 投射圆环
+	ProjectInliers<PointXYZ> projectInliers;
+	projectInliers.setInputCloud(sourceCloud);
+	projectInliers.setModelType(pcl::SACMODEL_TORUS);
+	projectInliers.setModelCoefficients(coefficients);
+	projectInliers.filter(*targetCloud);
+
+	Point3Fs* point3Fs = pclsharp::toPoint3Fs(*targetCloud);
+
+	return point3Fs;
+}
+
+// 其他模型的函数可以按照上面的模板进行类似的编写，根据模型的具体参数进行调整。
+/// <summary>
+/// 投射平行线
+/// </summary>
+/// <param name="points">点集</param>
+/// <param name="length">点集长度</param>
+/// <param name="x">平行线方向x分量</param>
+/// <param name="y">平行线方向y分量</param>
+/// <param name="z">平行线方向z分量</param>
+/// <returns>投射后点云</returns>
+Point3Fs* projectParallelLine(Point3F points[], const int length, const float x, const float y, const float z) {
+	const PointCloud<PointXYZ>::Ptr& sourceCloud = pclsharp::toPointCloud(points, length);
+	const PointCloud<PointXYZ>::Ptr targetCloud = std::make_shared<PointCloud<PointXYZ>>();
+
+	// 定义平行线
+	const ModelCoefficients::Ptr coefficients = std::make_shared<ModelCoefficients>();
+	coefficients->values.resize(3);
+	coefficients->values[0] = x;
+	coefficients->values[1] = y;
+	coefficients->values[2] = z;
+
+	// 投射平行线
+	ProjectInliers<PointXYZ> projectInliers;
+	projectInliers.setInputCloud(sourceCloud);
+	projectInliers.setModelType(pcl::SACMODEL_PARALLEL_LINE);
+	projectInliers.setModelCoefficients(coefficients);
+	projectInliers.filter(*targetCloud);
+
+	Point3Fs* point3Fs = pclsharp::toPoint3Fs(*targetCloud);
+
+	return point3Fs;
+}
+
+/// <summary>
+/// 投射垂直平面
+/// </summary>
+/// <param name="points">点集</param>
+/// <param name="length">点集长度</param>
+/// <param name="x">法向量x分量</param>
+/// <param name="y">法向量y分量</param>
+/// <param name="z">法向量z分量</param>
+/// <returns>投射后点云</returns>
+Point3Fs* projectPerpendicularPlane(Point3F points[], const int length, const float x, const float y, const float z) {
+	const PointCloud<PointXYZ>::Ptr& sourceCloud = pclsharp::toPointCloud(points, length);
+	const PointCloud<PointXYZ>::Ptr targetCloud = std::make_shared<PointCloud<PointXYZ>>();
+
+	// 定义垂直平面
+	const ModelCoefficients::Ptr coefficients = std::make_shared<ModelCoefficients>();
+	coefficients->values.resize(3);
+	coefficients->values[0] = x;
+	coefficients->values[1] = y;
+	coefficients->values[2] = z;
+
+	// 投射垂直平面
+	ProjectInliers<PointXYZ> projectInliers;
+	projectInliers.setInputCloud(sourceCloud);
+	projectInliers.setModelType(pcl::SACMODEL_PERPENDICULAR_PLANE);
+	projectInliers.setModelCoefficients(coefficients);
+	projectInliers.filter(*targetCloud);
+
+	Point3Fs* point3Fs = pclsharp::toPoint3Fs(*targetCloud);
+
+	return point3Fs;
+}
+
+/// <summary>
+/// 投射平行线集合
+/// </summary>
+/// <param name="points">点集</param>
+/// <param name="length">点集长度</param>
+/// <param name="x">平行线方向x分量</param>
+/// <param name="y">平行线方向y分量</param>
+/// <param name="z">平行线方向z分量</param>
+/// <returns>投射后点云</returns>
+Point3Fs* projectParallelLines(Point3F points[], const int length, const float x, const float y, const float z) {
+	const PointCloud<PointXYZ>::Ptr& sourceCloud = pclsharp::toPointCloud(points, length);
+	const PointCloud<PointXYZ>::Ptr targetCloud = std::make_shared<PointCloud<PointXYZ>>();
+
+	// 定义平行线集合
+	const ModelCoefficients::Ptr coefficients = std::make_shared<ModelCoefficients>();
+	coefficients->values.resize(3);
+	coefficients->values[0] = x;
+	coefficients->values[1] = y;
+	coefficients->values[2] = z;
+
+	// 投射平行线集合
+	ProjectInliers<PointXYZ> projectInliers;
+	projectInliers.setInputCloud(sourceCloud);
+	projectInliers.setModelType(pcl::SACMODEL_PARALLEL_LINES);
+	projectInliers.setModelCoefficients(coefficients);
+	projectInliers.filter(*targetCloud);
+
+	Point3Fs* point3Fs = pclsharp::toPoint3Fs(*targetCloud);
+
+	return point3Fs;
+}
+
+/// <summary>
+/// 投射法向平面
+/// </summary>
+/// <param name="points">点集</param>
+/// <param name="length">点集长度</param>
+/// <param name="x">法向量x分量</param>
+/// <param name="y">法向量y分量</param>
+/// <param name="z">法向量z分量</param>
+/// <param name="nx">法向量x分量</param>
+/// <param name="ny">法向量y分量</param>
+/// <param name="nz">法向量z分量</param>
+/// <returns>投射后点云</returns>
+Point3Fs* projectNormalPlane(Point3F points[], const int length, const float x, const float y, const float z, const float nx, const float ny, const float nz) {
+	const PointCloud<PointXYZ>::Ptr& sourceCloud = pclsharp::toPointCloud(points, length);
+	const PointCloud<PointXYZ>::Ptr targetCloud = std::make_shared<PointCloud<PointXYZ>>();
+
+	// 定义法向平面
+	const ModelCoefficients::Ptr coefficients = std::make_shared<ModelCoefficients>();
+	coefficients->values.resize(6);
+	coefficients->values[0] = x;
+	coefficients->values[1] = y;
+	coefficients->values[2] = z;
+	coefficients->values[3] = nx;
+	coefficients->values[4] = ny;
+	coefficients->values[5] = nz;
+
+	// 投射法向平面
+	ProjectInliers<PointXYZ> projectInliers;
+	projectInliers.setInputCloud(sourceCloud);
+	projectInliers.setModelType(pcl::SACMODEL_NORMAL_PLANE);
+	projectInliers.setModelCoefficients(coefficients);
+	projectInliers.filter(*targetCloud);
+
+	Point3Fs* point3Fs = pclsharp::toPoint3Fs(*targetCloud);
+
+	return point3Fs;
+}
+
+/// <summary>
+/// 投射法向球
+/// </summary>
+/// <param name="points">点集</param>
+/// <param name="length">点集长度</param>
+/// <param name="x">球心x坐标</param>
+/// <param name="y">球心y坐标</param>
+/// <param name="z">球心z坐标</param>
+/// <param name="radius">半径</param>
+/// <param name="nx">法向量x分量</param>
+/// <param name="ny">法向量y分量</param>
+/// <param name="nz">法向量z分量</param>
+/// <returns>投射后点云</returns>
+Point3Fs* projectNormalSphere(Point3F points[], const int length, const float x, const float y, const float z, const float radius, const float nx, const float ny, const float nz) {
+	const PointCloud<PointXYZ>::Ptr& sourceCloud = pclsharp::toPointCloud(points, length);
+	const PointCloud<PointXYZ>::Ptr targetCloud = std::make_shared<PointCloud<PointXYZ>>();
+
+	// 定义法向球
+	const ModelCoefficients::Ptr coefficients = std::make_shared<ModelCoefficients>();
+	coefficients->values.resize(6);
+	coefficients->values[0] = x;
+	coefficients->values[1] = y;
+	coefficients->values[2] = z;
+	coefficients->values[3] = radius;
+	coefficients->values[4] = nx;
+	coefficients->values[5] = ny;
+	coefficients->values[6] = nz;
+
+	// 投射法向球
+	ProjectInliers<PointXYZ> projectInliers;
+	projectInliers.setInputCloud(sourceCloud);
+	projectInliers.setModelType(pcl::SACMODEL_NORMAL_SPHERE);
+	projectInliers.setModelCoefficients(coefficients);
+	projectInliers.filter(*targetCloud);
+
+	Point3Fs* point3Fs = pclsharp::toPoint3Fs(*targetCloud);
+
+	return point3Fs;
+}
+
+/// <summary>
+/// 投射注册模型
+/// </summary>
+/// <param name="points">点集</param>
+/// <param name="length">点集长度</param>
+/// <param name="tx">平移向量x分量</param>
+/// <param name="ty">平移向量y分量</param>
+/// <param="tz">平移向量z分量</param>
+/// <param name="qx">四元数x分量</param>
+/// <param name="qy">四元数y分量</param>
+/// <param name="qz">四元数z分量</param>
+/// <param name="qw">四元数w分量</param>
+/// <returns>投射后点云</returns>
+Point3Fs* projectRegistration(Point3F points[], const int length, const float tx, const float ty, const float tz, const float qx, const float qy, const float qz, const float qw) {
+	const PointCloud<PointXYZ>::Ptr& sourceCloud = pclsharp::toPointCloud(points, length);
+	const PointCloud<PointXYZ>::Ptr targetCloud = std::make_shared<PointCloud<PointXYZ>>();
+
+	// 定义注册模型
+	const ModelCoefficients::Ptr coefficients = std::make_shared<ModelCoefficients>();
+	coefficients->values.resize(7);
+	coefficients->values[0] = tx;
+	coefficients->values[1] = ty;
+	coefficients->values[2] = tz;
+	coefficients->values[3] = qx;
+	coefficients->values[4] = qy;
+	coefficients->values[5] = qz;
+	coefficients->values[6] = qw;
+
+	// 投射注册模型
+	ProjectInliers<PointXYZ> projectInliers;
+	projectInliers.setInputCloud(sourceCloud);
+	projectInliers.setModelType(pcl::SACMODEL_REGISTRATION);
+	projectInliers.setModelCoefficients(coefficients);
+	projectInliers.filter(*targetCloud);
+
+	Point3Fs* point3Fs = pclsharp::toPoint3Fs(*targetCloud);
+
+	return point3Fs;
+}
+
+/// <summary>
+/// 投射2D注册模型
+/// </summary>
+/// <param name="points">点集</param>
+/// <param name="length">点集长度</param>
+/// <param name="tx">平移向量x分量</param>
+/// <param name="ty">平移向量y分量</param>
+/// <param name="tz">平移向量z分量</param>
+/// <param name="qx">四元数x分量</param>
+/// <param name="qy">四元数y分量</param>
+/// <param name="qz">四元数z分量</param>
+/// <param name="qw">四元数w分量</param>
+/// <returns>投射后点云</returns>
+Point3Fs* projectRegistration2D(Point3F points[], const int length, const float tx, const float ty, const float tz, const float qx, const float qy, const float qz, const float qw) {
+	const PointCloud<PointXYZ>::Ptr& sourceCloud = pclsharp::toPointCloud(points, length);
+	const PointCloud<PointXYZ>::Ptr targetCloud = std::make_shared<PointCloud<PointXYZ>>();
+
+	// 定义2D注册模型
+	const ModelCoefficients::Ptr coefficients = std::make_shared<ModelCoefficients>();
+	coefficients->values.resize(7);
+	coefficients->values[0] = tx;
+	coefficients->values[1] = ty;
+	coefficients->values[2] = tz;
+	coefficients->values[3] = qx;
+	coefficients->values[4] = qy;
+	coefficients->values[5] = qz;
+	coefficients->values[6] = qw;
+
+	// 投射2D注册模型
+	ProjectInliers<PointXYZ> projectInliers;
+	projectInliers.setInputCloud(sourceCloud);
+	projectInliers.setModelType(pcl::SACMODEL_REGISTRATION_2D);
+	projectInliers.setModelCoefficients(coefficients);
+	projectInliers.filter(*targetCloud);
+
+	Point3Fs* point3Fs = pclsharp::toPoint3Fs(*targetCloud);
+
+	return point3Fs;
+}
+
+/// <summary>
+/// 投射平行平面
+/// </summary>
+/// <param name="points">点集</param>
+/// <param name="length">点集长度</param>
+/// <param name="x">法向量x分量</param>
+/// <param name="y">法向量y分量</param>
+/// <param name="z">法向量z分量</param>
+/// <returns>投射后点云</returns>
+Point3Fs* projectParallelPlane(Point3F points[], const int length, const float x, const float y, const float z) {
+	const PointCloud<PointXYZ>::Ptr& sourceCloud = pclsharp::toPointCloud(points, length);
+	const PointCloud<PointXYZ>::Ptr targetCloud = std::make_shared<PointCloud<PointXYZ>>();
+
+	// 定义平行平面
+	const ModelCoefficients::Ptr coefficients = std::make_shared<ModelCoefficients>();
+	coefficients->values.resize(3);
+	coefficients->values[0] = x;
+	coefficients->values[1] = y;
+	coefficients->values[2] = z;
+
+	// 投射平行平面
+	ProjectInliers<PointXYZ> projectInliers;
+	projectInliers.setInputCloud(sourceCloud);
+	projectInliers.setModelType(pcl::SACMODEL_PARALLEL_PLANE);
+	projectInliers.setModelCoefficients(coefficients);
+	projectInliers.filter(*targetCloud);
+
+	Point3Fs* point3Fs = pclsharp::toPoint3Fs(*targetCloud);
+
+	return point3Fs;
+}
+
+/// <summary>
+/// 投射平行法向平面
+/// </summary>
+/// <param name="points">点集</param>
+/// <param name="length">点集长度</param>
+/// <param name="x">法向量x分量</param>
+/// <param name="y">法向量y分量</param>
+/// <param name="z">法向量z分量</param>
+/// <returns>投射后点云</returns>
+Point3Fs* projectNormalParallelPlane(Point3F points[], const int length, const float x, const float y, const float z) {
+	const PointCloud<PointXYZ>::Ptr& sourceCloud = pclsharp::toPointCloud(points, length);
+	const PointCloud<PointXYZ>::Ptr targetCloud = std::make_shared<PointCloud<PointXYZ>>();
+
+	// 定义平行法向平面
+	const ModelCoefficients::Ptr coefficients = std::make_shared<ModelCoefficients>();
+	coefficients->values.resize(3);
+	coefficients->values[0] = x;
+	coefficients->values[1] = y;
+	coefficients->values[2] = z;
+
+	// 投射平行法向平面
+	ProjectInliers<PointXYZ> projectInliers;
+	projectInliers.setInputCloud(sourceCloud);
+	projectInliers.setModelType(pcl::SACMODEL_NORMAL_PARALLEL_PLANE);
+	projectInliers.setModelCoefficients(coefficients);
+	projectInliers.filter(*targetCloud);
+
+	Point3Fs* point3Fs = pclsharp::toPoint3Fs(*targetCloud);
+
+	return point3Fs;
+}
+
+/// <summary>
+/// 投射棒状物
+/// </summary>
+/// <param name="points">点集</param>
+/// <param name="length">点集长度</param>
+/// <param name="x1">棒状物起点x坐标</param>
+/// <param name="y1">棒状物起点y坐标</param>
+/// <param name="z1">棒状物起点z坐标</param>
+/// <param name="x2">棒状物终点x坐标</param>
+/// <param name="y2">棒状物终点y坐标</param>
+/// <param name="z2">棒状物终点z坐标</param>
+/// <returns>投射后点云</returns>
+Point3Fs* projectStick(Point3F points[], const int length, const float x1, const float y1, const float z1, const float x2, const float y2, const float z2) {
+	const PointCloud<PointXYZ>::Ptr& sourceCloud = pclsharp::toPointCloud(points, length);
+	const PointCloud<PointXYZ>::Ptr targetCloud = std::make_shared<PointCloud<PointXYZ>>();
+
+	// 定义棒状物
+	const ModelCoefficients::Ptr coefficients = std::make_shared<ModelCoefficients>();
+	coefficients->values.resize(6);
+	coefficients->values[0] = x1;
+	coefficients->values[1] = y1;
+	coefficients->values[2] = z1;
+	coefficients->values[3] = x2;
+	coefficients->values[4] = y2;
+	coefficients->values[5] = z2;
+
+	// 投射棒状物
+	ProjectInliers<PointXYZ> projectInliers;
+	projectInliers.setInputCloud(sourceCloud);
+	projectInliers.setModelType(pcl::SACMODEL_STICK);
+	projectInliers.setModelCoefficients(coefficients);
+	projectInliers.filter(*targetCloud);
+
+	Point3Fs* point3Fs = pclsharp::toPoint3Fs(*targetCloud);
+
+	return point3Fs;
+}
+
+/// <summary>
+/// 投射3D椭圆
+/// </summary>
+/// <param name="points">点集</param>
+/// <param name="length">点集长度</param>
+/// <param name="x">椭圆中心x坐标</param>
+/// <param name="y">椭圆中心y坐标</param>
+/// <param name="z">椭圆中心z坐标</param>
+/// <param name="a">长轴半径</param>
+/// <param name="b">短轴半径</param>
+/// <param name="c">椭圆法向量x分量</param>
+/// <param name="d">椭圆法向量y分量</param>
+/// <param name="e">椭圆法向量z分量</param>
+/// <returns>投射后点云</returns>
+Point3Fs* projectEllipse3D(Point3F points[], const int length, const float x, const float y, const float z, const float a, const float b, const float c, const float d, const float e) {
+	const PointCloud<PointXYZ>::Ptr& sourceCloud = pclsharp::toPointCloud(points, length);
+	const PointCloud<PointXYZ>::Ptr targetCloud = std::make_shared<PointCloud<PointXYZ>>();
+
+	// 定义3D椭圆
+	const ModelCoefficients::Ptr coefficients = std::make_shared<ModelCoefficients>();
+	coefficients->values.resize(7);
+	coefficients->values[0] = x;
+	coefficients->values[1] = y;
+	coefficients->values[2] = z;
+	coefficients->values[3] = a;
+	coefficients->values[4] = b;
+	coefficients->values[5] = c;
+	coefficients->values[6] = d;
+	coefficients->values[7] = e;
+
+	// 投射3D椭圆
+	ProjectInliers<PointXYZ> projectInliers;
+	projectInliers.setInputCloud(sourceCloud);
+	projectInliers.setModelType(pcl::SACMODEL_ELLIPSE3D);
+	projectInliers.setModelCoefficients(coefficients);
+	projectInliers.filter(*targetCloud);
+
+	Point3Fs* point3Fs = pclsharp::toPoint3Fs(*targetCloud);
+
+	return point3Fs;
+}
+
+/// <summary>
 /// 提取边框
 /// </summary>
 /// <param name="points">点集</param>
