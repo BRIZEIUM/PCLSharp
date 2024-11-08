@@ -18,7 +18,7 @@ using Pose = SD.Toolkits.Mathematics.Models.Pose;
 namespace PCLSharp.Client.ViewModels.CommonContext
 {
     /// <summary>
-    /// 长方体裁剪视图模型
+    /// 盒子裁剪视图模型
     /// </summary>
     public class CropBoxViewModel : PreviewViewModel
     {
@@ -79,11 +79,10 @@ namespace PCLSharp.Client.ViewModels.CommonContext
                 OffsetZ = this.PointCloud.Bound.Center.Z
             };
             this.BoundingBox.Transform = new MatrixTransform3D(boxMatrix);
-            DiffuseMaterial material = new DiffuseMaterial
+            this.BoundingBox.Material = new DiffuseMaterial
             {
                 DiffuseColor = new Color4(1, 0, 0, 0.25f)
             };
-            this.BoundingBox.Material = material;
         }
         #endregion
 
@@ -256,7 +255,7 @@ namespace PCLSharp.Client.ViewModels.CommonContext
 
                     Matrix<double> newMatrix = newPose.ToRotationTranslationMatrix();
                     Matrix3D newMatrix3D = newMatrix.ToMatrix3D();
-                    this.BoundingBox.Transform = new MatrixTransform3D(newMatrix3D); ;
+                    this.BoundingBox.Transform = new MatrixTransform3D(newMatrix3D);
 
                     eventArgs.Handled = true;
                     return;
@@ -271,7 +270,7 @@ namespace PCLSharp.Client.ViewModels.CommonContext
                     rtMatrix3D.OffsetX = newVisualPos3D.X;
                     rtMatrix3D.OffsetY = newVisualPos3D.Y;
                     rtMatrix3D.OffsetZ = newVisualPos3D.Z;
-                    this.BoundingBox.Transform = new MatrixTransform3D(rtMatrix3D); ;
+                    this.BoundingBox.Transform = new MatrixTransform3D(rtMatrix3D);
 
                     eventArgs.Handled = true;
                     return;

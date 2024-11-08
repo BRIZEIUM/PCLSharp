@@ -26,6 +26,7 @@ using SkiaSharp.Views.WPF;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -58,34 +59,9 @@ namespace PCLSharp.Client.ViewModels.HomeContext
         private readonly ICloudFiles _cloudFiles;
 
         /// <summary>
-        /// 点云搜索接口
-        /// </summary>
-        private readonly ICloudSearch _cloudSearch;
-
-        /// <summary>
-        /// 点云滤波接口
-        /// </summary>
-        private readonly ICloudFilters _cloudFilters;
-
-        /// <summary>
-        /// 点云法向量接口
-        /// </summary>
-        private readonly ICloudNormals _cloudNormals;
-
-        /// <summary>
-        /// 点云关键点接口
-        /// </summary>
-        private readonly ICloudKeyPoints _cloudKeyPoints;
-
-        /// <summary>
         /// 点云特征接口
         /// </summary>
         private readonly ICloudFeatures _cloudFeatures;
-
-        /// <summary>
-        /// 点云分割接口
-        /// </summary>
-        private readonly ICloudSegmentations _cloudSegmentations;
 
         /// <summary>
         /// 窗体管理器
@@ -95,16 +71,11 @@ namespace PCLSharp.Client.ViewModels.HomeContext
         /// <summary>
         /// 依赖注入构造器
         /// </summary>
-        public IndexViewModel(ICloudCommon cloudCommon, ICloudFiles cloudFiles, ICloudSearch cloudSearch, ICloudFilters cloudFilters, ICloudNormals cloudNormals, ICloudKeyPoints cloudKeyPoints, ICloudFeatures cloudFeatures, ICloudSegmentations cloudSegmentations, IWindowManager windowManager)
+        public IndexViewModel(ICloudCommon cloudCommon, ICloudFiles cloudFiles, ICloudFeatures cloudFeatures, IWindowManager windowManager)
         {
             this._cloudCommon = cloudCommon;
             this._cloudFiles = cloudFiles;
-            this._cloudSearch = cloudSearch;
-            this._cloudFilters = cloudFilters;
-            this._cloudNormals = cloudNormals;
-            this._cloudKeyPoints = cloudKeyPoints;
             this._cloudFeatures = cloudFeatures;
-            this._cloudSegmentations = cloudSegmentations;
             this._windowManager = windowManager;
         }
 
@@ -436,30 +407,6 @@ namespace PCLSharp.Client.ViewModels.HomeContext
 
         //编辑
 
-        #region 刷新点云 —— async void RefreshCloud()
-        /// <summary>
-        /// 刷新点云
-        /// </summary>
-        public async void RefreshCloud()
-        {
-            #region # 验证
-
-            if (this.EffectivePointCloud == null)
-            {
-                MessageBox.Show("点云未加载！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            #endregion
-
-            this.Busy();
-
-            await this.ReloadCloud();
-
-            this.Idle();
-        }
-        #endregion
-
         #region 设置点云颜色 —— async void SetCloudColor()
         /// <summary>
         /// 设置点云颜色
@@ -538,6 +485,30 @@ namespace PCLSharp.Client.ViewModels.HomeContext
             }
 
             this.Camera.LookAt(centroid.ToPoint(), 200);
+
+            this.Idle();
+        }
+        #endregion
+
+        #region 重置点云 —— async void ResetPointCloud()
+        /// <summary>
+        /// 重置点云
+        /// </summary>
+        public async void ResetPointCloud()
+        {
+            #region # 验证
+
+            if (this.EffectivePointCloud == null)
+            {
+                MessageBox.Show("点云未加载！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            #endregion
+
+            this.Busy();
+
+            await this.ReloadCloud();
 
             this.Idle();
         }
@@ -630,9 +601,9 @@ namespace PCLSharp.Client.ViewModels.HomeContext
         }
         #endregion
 
-        #region 长方体裁剪 —— async void CropBox()
+        #region 盒子裁剪 —— async void CropBox()
         /// <summary>
-        /// 长方体裁剪
+        /// 盒子裁剪
         /// </summary>
         public async void CropBox()
         {
@@ -747,6 +718,16 @@ namespace PCLSharp.Client.ViewModels.HomeContext
             }
 
             this.Idle();
+        }
+        #endregion
+
+        #region 技术支持 —— void Support()
+        /// <summary>
+        /// 技术支持
+        /// </summary>
+        public void Support()
+        {
+            Process.Start("https://gitee.com/lishilei0523/PointCloud-Studio");
         }
         #endregion
 
@@ -1340,12 +1321,12 @@ namespace PCLSharp.Client.ViewModels.HomeContext
 
                 //绘制直方图
                 using Plot plot = new Plot();
-                plot.AddNARF(descriptors);
-                using SKImage skImage = plot.GetSKImage(viewModel.ImageWidth!.Value, viewModel.ImageHeight!.Value);
+                await Task.Run(() => plot.AddNARF(descriptors));
+                using SKImage skImage = await Task.Run(() => plot.GetSKImage(viewModel.ImageWidth!.Value, viewModel.ImageHeight!.Value));
                 BitmapSource bitmapSource = skImage.ToWriteableBitmap();
 
                 ImageViewModel imageViewModel = ResolveMediator.Resolve<ImageViewModel>();
-                imageViewModel.Load("NARF特征", bitmapSource);
+                imageViewModel.Load(bitmapSource, "NARF特征");
                 await this._windowManager.ShowDialogAsync(imageViewModel);
             }
 
@@ -1380,12 +1361,12 @@ namespace PCLSharp.Client.ViewModels.HomeContext
 
                 //绘制直方图
                 using Plot plot = new Plot();
-                plot.AddPFH(descriptors);
-                using SKImage skImage = plot.GetSKImage(viewModel.ImageWidth!.Value, viewModel.ImageHeight!.Value);
+                await Task.Run(() => plot.AddPFH(descriptors));
+                using SKImage skImage = await Task.Run(() => plot.GetSKImage(viewModel.ImageWidth!.Value, viewModel.ImageHeight!.Value));
                 BitmapSource bitmapSource = skImage.ToWriteableBitmap();
 
                 ImageViewModel imageViewModel = ResolveMediator.Resolve<ImageViewModel>();
-                imageViewModel.Load("PFH特征", bitmapSource);
+                imageViewModel.Load(bitmapSource, "PFH特征");
                 await this._windowManager.ShowDialogAsync(imageViewModel);
             }
 
@@ -1420,12 +1401,12 @@ namespace PCLSharp.Client.ViewModels.HomeContext
 
                 //绘制直方图
                 using Plot plot = new Plot();
-                plot.AddFPFH(descriptors);
-                using SKImage skImage = plot.GetSKImage(viewModel.ImageWidth!.Value, viewModel.ImageHeight!.Value);
+                await Task.Run(() => plot.AddFPFH(descriptors));
+                using SKImage skImage = await Task.Run(() => plot.GetSKImage(viewModel.ImageWidth!.Value, viewModel.ImageHeight!.Value));
                 BitmapSource bitmapSource = skImage.ToWriteableBitmap();
 
                 ImageViewModel imageViewModel = ResolveMediator.Resolve<ImageViewModel>();
-                imageViewModel.Load("FPFH特征", bitmapSource);
+                imageViewModel.Load(bitmapSource, "FPFH特征");
                 await this._windowManager.ShowDialogAsync(imageViewModel);
             }
 
@@ -1460,12 +1441,12 @@ namespace PCLSharp.Client.ViewModels.HomeContext
 
                 //绘制直方图
                 using Plot plot = new Plot();
-                plot.Add3DSC(descriptors);
-                using SKImage skImage = plot.GetSKImage(viewModel.ImageWidth!.Value, viewModel.ImageHeight!.Value);
+                await Task.Run(() => plot.Add3DSC(descriptors));
+                using SKImage skImage = await Task.Run(() => plot.GetSKImage(viewModel.ImageWidth!.Value, viewModel.ImageHeight!.Value));
                 BitmapSource bitmapSource = skImage.ToWriteableBitmap();
 
                 ImageViewModel imageViewModel = ResolveMediator.Resolve<ImageViewModel>();
-                imageViewModel.Load("3DSC特征", bitmapSource);
+                imageViewModel.Load(bitmapSource, "3DSC特征");
                 await this._windowManager.ShowDialogAsync(imageViewModel);
             }
 
@@ -1500,12 +1481,12 @@ namespace PCLSharp.Client.ViewModels.HomeContext
 
                 //绘制直方图
                 using Plot plot = new Plot();
-                plot.AddSHOT(descriptors);
-                using SKImage skImage = plot.GetSKImage(viewModel.ImageWidth!.Value, viewModel.ImageHeight!.Value);
+                await Task.Run(() => plot.AddSHOT(descriptors));
+                using SKImage skImage = await Task.Run(() => plot.GetSKImage(viewModel.ImageWidth!.Value, viewModel.ImageHeight!.Value));
                 BitmapSource bitmapSource = skImage.ToWriteableBitmap();
 
                 ImageViewModel imageViewModel = ResolveMediator.Resolve<ImageViewModel>();
-                imageViewModel.Load("SHOT特征", bitmapSource);
+                imageViewModel.Load(bitmapSource, "SHOT特征");
                 await this._windowManager.ShowDialogAsync(imageViewModel);
             }
 
@@ -1701,7 +1682,7 @@ namespace PCLSharp.Client.ViewModels.HomeContext
 
                 #endregion
 
-                this.RefreshCloud();
+                this.ResetPointCloud();
             }
             if (Keyboard.IsKeyDown(Key.LeftCtrl) && Keyboard.IsKeyDown(Key.S))
             {

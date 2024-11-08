@@ -137,9 +137,9 @@ namespace PCLSharp.Client.ViewModels.RegistrationContext
         public string TargetFileExtension { get; set; }
         #endregion
 
-        #region 源点云 —— PointGeometry3D SourceCloud
+        #region 参考点云 —— PointGeometry3D SourceCloud
         /// <summary>
-        /// 源点云
+        /// 参考点云
         /// </summary>
         [DependencyProperty]
         public PointGeometry3D SourceCloud { get; set; }
@@ -153,9 +153,9 @@ namespace PCLSharp.Client.ViewModels.RegistrationContext
         public PointGeometry3D TargetCloud { get; set; }
         #endregion
 
-        #region 源点云质心 —— PointGeometry3D SourceCentroid
+        #region 参考点云质心 —— PointGeometry3D SourceCentroid
         /// <summary>
-        /// 源点云质心
+        /// 参考点云质心
         /// </summary>
         [DependencyProperty]
         public PointGeometry3D SourceCentroid { get; set; }
@@ -233,9 +233,9 @@ namespace PCLSharp.Client.ViewModels.RegistrationContext
         public string TotalDuration { get; set; }
         #endregion
 
-        #region 源点云采样数I —— int? SourceSampledCountI
+        #region 参考点云采样数I —— int? SourceSampledCountI
         /// <summary>
-        /// 源点云采样数I
+        /// 参考点云采样数I
         /// </summary>
         [DependencyProperty]
         public int? SourceSampledCountI { get; set; }
@@ -249,9 +249,9 @@ namespace PCLSharp.Client.ViewModels.RegistrationContext
         public int? TargetSampledCountI { get; set; }
         #endregion
 
-        #region 源点云采样数II —— int? SourceSampledCountII
+        #region 参考点云采样数II —— int? SourceSampledCountII
         /// <summary>
-        /// 源点云采样数I
+        /// 参考点云采样数I
         /// </summary>
         [DependencyProperty]
         public int? SourceSampledCountII { get; set; }
@@ -265,9 +265,9 @@ namespace PCLSharp.Client.ViewModels.RegistrationContext
         public int? TargetSampledCountII { get; set; }
         #endregion
 
-        #region 源点云分割数 —— int? SourceSegmentedCount
+        #region 参考点云分割数 —— int? SourceSegmentedCount
         /// <summary>
-        /// 源点云分割数
+        /// 参考点云分割数
         /// </summary>
         [DependencyProperty]
         public int? SourceSegmentedCount { get; set; }
@@ -281,9 +281,9 @@ namespace PCLSharp.Client.ViewModels.RegistrationContext
         public int? TargetSegmentedCount { get; set; }
         #endregion
 
-        #region 源点云离群数 —— int? SourceOutlierCount
+        #region 参考点云离群数 —— int? SourceOutlierCount
         /// <summary>
-        /// 源点云离群数
+        /// 参考点云离群数
         /// </summary>
         [DependencyProperty]
         public int? SourceOutlierCount { get; set; }
@@ -297,9 +297,9 @@ namespace PCLSharp.Client.ViewModels.RegistrationContext
         public int? TargetOutlierCount { get; set; }
         #endregion
 
-        #region 源点云关键点数 —— int? SourceKeyPointsCount
+        #region 参考点云关键点数 —— int? SourceKeyPointsCount
         /// <summary>
-        /// 源点云关键点数
+        /// 参考点云关键点数
         /// </summary>
         [DependencyProperty]
         public int? SourceKeyPointsCount { get; set; }
@@ -411,9 +411,9 @@ namespace PCLSharp.Client.ViewModels.RegistrationContext
 
         //Actions
 
-        #region 打开源点云 —— async void OpenSourceCloud()
+        #region 打开参考点云 —— async void OpenSourceCloud()
         /// <summary>
-        /// 打开源点云
+        /// 打开参考点云
         /// </summary>
         public async void OpenSourceCloud()
         {
@@ -471,7 +471,7 @@ namespace PCLSharp.Client.ViewModels.RegistrationContext
 
             if (this.SourceCloud == null)
             {
-                MessageBox.Show("源点云未加载！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("参考点云未加载！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             if (this.TargetCloud == null)
@@ -529,7 +529,7 @@ namespace PCLSharp.Client.ViewModels.RegistrationContext
 
             if (this.SourceCloud == null)
             {
-                MessageBox.Show("源点云未加载！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("参考点云未加载！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
             if (this.TargetCloud == null)
@@ -765,27 +765,6 @@ namespace PCLSharp.Client.ViewModels.RegistrationContext
         }
         #endregion
 
-        #region 刷新点云 —— async void RefreshCloud()
-        /// <summary>
-        /// 刷新点云
-        /// </summary>
-        public async void RefreshCloud()
-        {
-            this.Busy();
-
-            if (!string.IsNullOrWhiteSpace(this.SourceFilePath))
-            {
-                await this.ReloadSourceCloud();
-            }
-            if (!string.IsNullOrWhiteSpace(this.TargetFilePath))
-            {
-                await this.ReloadTargetCloud();
-            }
-
-            this.Idle();
-        }
-        #endregion
-
         #region 指向质心 —— async void LookAtCentroid()
         /// <summary>
         /// 指向质心
@@ -823,6 +802,27 @@ namespace PCLSharp.Client.ViewModels.RegistrationContext
         }
         #endregion
 
+        #region 重置点云 —— async void ResetPointCloud()
+        /// <summary>
+        /// 重置点云
+        /// </summary>
+        public async void ResetPointCloud()
+        {
+            this.Busy();
+
+            if (!string.IsNullOrWhiteSpace(this.SourceFilePath))
+            {
+                await this.ReloadSourceCloud();
+            }
+            if (!string.IsNullOrWhiteSpace(this.TargetFilePath))
+            {
+                await this.ReloadTargetCloud();
+            }
+
+            this.Idle();
+        }
+        #endregion
+
         #region 重置相机 —— void ResetCamera()
         /// <summary>
         /// 重置相机
@@ -852,7 +852,7 @@ namespace PCLSharp.Client.ViewModels.RegistrationContext
         {
             if (Keyboard.IsKeyDown(Key.F5))
             {
-                this.RefreshCloud();
+                this.ResetPointCloud();
             }
         }
         #endregion
@@ -860,9 +860,9 @@ namespace PCLSharp.Client.ViewModels.RegistrationContext
 
         //Private
 
-        #region 加载源点云 —— async Task ReloadSourceCloud()
+        #region 加载参考点云 —— async Task ReloadSourceCloud()
         /// <summary>
-        /// 加载源点云
+        /// 加载参考点云
         /// </summary>
         private async Task ReloadSourceCloud()
         {
